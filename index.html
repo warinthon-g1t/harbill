@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>หารบิลคืนนี้</title>
+  <meta name="description" content="หารค่าอาหาร คาราโอเกะ และเหล้า ตามคนที่ร่วมจริง พร้อม Service charge และ VAT">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#e8edf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#070a11" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="หารบิล">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/favicon-64.png">
+
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="app" id="app" data-tab="items">
+  <div class="orb" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <span class="brand"><img src="icons/favicon-64.png" alt="" width="28" height="28">หารบิลคืนนี้</span>
+    <div class="top-actions">
+      <button id="loadSample" class="pill" type="button">ตัวอย่าง</button>
+      <button id="resetBtn" class="pill" type="button">เริ่มบิลใหม่</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>ใครกินเท่าไหร่<br>จ่ายเท่านั้น</h1>
+      <p class="lede">แยกค่าอาหาร คาราโอเกะ และเหล้า ตามคนที่ร่วมจริง หารตามชั่วโมงที่อยู่ได้ พร้อม Service charge และ VAT</p>
+    </div>
+    <div class="hero-card glass">
+      <div class="hero-row"><span class="hint" id="heroSub">ยอดรวมทั้งบิล</span><span class="dots" id="heroDots"></span></div>
+      <div class="num hero-total" id="heroTotal">฿0</div>
+      <div class="hero-row">
+        <div class="gang"><div class="avatars" id="avatars"></div><span id="gangText" class="hint"></span></div>
+        <span class="hint">เฉลี่ย <b class="num" id="heroAvg">฿0</b></span>
+      </div>
+    </div>
+  </section>
+
+  <div id="sampleBanner" class="banner" hidden><b>ข้อมูลตัวอย่าง</b> แก้ชื่อและราคาเป็นของจริงได้เลย หรือกด “เริ่มบิลใหม่”</div>
+
+  <main class="work">
+    <section class="panel glass" data-panel="gang" id="gang">
+      <div class="panel-head"><h2>แก๊งคืนนี้</h2><p class="hint">กดปิดหมวดที่ใครไม่ได้ร่วม เช่น ไม่ดื่ม</p></div>
+      <div id="people" class="people"></div>
+      <form id="addPerson" class="add-row">
+        <input type="text" id="newPerson" placeholder="ชื่อเพื่อน" autocomplete="off" enterkeyhint="done">
+        <button type="submit" class="btn-dark">เพิ่มคน</button>
+      </form>
+      <p class="hint" style="margin-top:10px">คนที่มาสมทบทีหลังจะยังไม่ถูกหารรายการเดิม ให้กดชื่อเขาเฉพาะรายการหรือรอบที่ร่วม</p>
+    </section>
+
+    <section class="panel glass" data-panel="items" id="bill">
+      <div class="panel-head"><h2>รายการในบิล</h2><p class="hint">กดชื่อเพื่อเลือกว่าใครหารรายการนั้น</p></div>
+      <div id="items" class="items"></div>
+      <div class="add-items">
+        <button type="button" class="chip c-food" data-add="food">+ อาหาร</button>
+        <button type="button" class="chip c-karaoke" data-add="karaoke">+ คาราโอเกะ</button>
+        <button type="button" class="chip c-drink" data-add="drink">+ เหล้า/เบียร์</button>
+        <button type="button" class="chip c-other" data-add="other">+ อื่นๆ</button>
+      </div>
+
+      <div class="panel-head" style="margin-top:26px"><h2>ค่าบริการและภาษี</h2><p class="hint">VAT คิดบนยอดที่รวม Service charge แล้ว</p></div>
+      <div class="charges">
+        <div class="charge"><label for="sc"><input type="checkbox" class="switch" id="sc"> Service charge</label><input type="number" id="scRate" min="0" step="0.5" inputmode="decimal" aria-label="อัตรา service charge"> %</div>
+        <div class="charge"><label for="vat"><input type="checkbox" class="switch" id="vat"> VAT</label><input type="number" id="vatRate" min="0" step="0.5" inputmode="decimal" aria-label="อัตรา VAT"> %</div>
+        <div class="charge"><label for="round"><input type="checkbox" class="switch" id="round"> ปัดขึ้นเป็นบาทเต็ม</label></div>
+      </div>
+    </section>
+
+    <aside class="panel glass summary" data-panel="summary" id="summary" aria-live="polite"></aside>
+  </main>
+
+  <nav class="tabbar" aria-label="เมนู">
+    <button type="button" data-tab="gang">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.3c2.4-.4 4.4 1 5 4.2"/></svg>
+      <span>แก๊ง</span><em id="tabGang"></em>
+    </button>
+    <button type="button" data-tab="items">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z"/><path d="M9 8.5h6M9 12h6"/></svg>
+      <span>รายการ</span><em id="tabItems"></em>
+    </button>
+    <button type="button" data-tab="summary">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8M12 7.5v1M12 15.5v1"/></svg>
+      <span>สรุป</span><em id="tabTotal"></em>
+    </button>
+  </nav>
+</div>
+</body>
+</html>
